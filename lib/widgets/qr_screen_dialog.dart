@@ -31,7 +31,7 @@ class QRScanDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           // QR Image
-          Image.asset(qrImagePath),
+          Image.asset('Assets/icons8-qr-100 (4).png'),
           SizedBox(height: 16),
           // URL Text
           Text(
