@@ -4,6 +4,8 @@ import 'package:kineticqr/utils/Constants/colors.dart';
 import 'package:kineticqr/views/qr_screen.dart';
 import 'package:kineticqr/widgets/custom_button.dart';
 
+import '../widgets/Bottomnavbar.dart';
+
 class Onboarding extends StatelessWidget {
   const Onboarding({super.key});
 
@@ -36,7 +38,7 @@ class Onboarding extends StatelessWidget {
             Padding(
               padding:  EdgeInsets.symmetric(horizontal: 56.w),
               child: CustomButton(text: "Let's Start", backgroundColor: Appcolor.yellow, textColor: Colors.white, onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> QRScreen()
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomAppBarPage()
                 ));
               }),
 

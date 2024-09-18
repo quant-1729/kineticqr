@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
 
 class QRScreen extends StatefulWidget {
   @override
@@ -12,166 +14,118 @@ class _QRScreenState extends State<QRScreen> {
   QRViewController? controller;
   String? qrText;
   double _zoomValue = 1.0;
-  bool camera_facing= true; // Initial zoom value
+  bool cameraFacing = true; // Initial camera facing direction
+  bool flashOn = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            child: Image.asset(
-              'Assets/home_background.jpg', // Replace with your background image path
-              fit: BoxFit.cover,
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Color(0xFF6d6c6b),
+          image: DecorationImage(
+            image: AssetImage('Assets/home_background.jpg'),
+            fit: BoxFit.fill,
+            opacity: 0.2,
           ),
-          Column(
-            children: <Widget>[
-              SizedBox(height: 32),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 42),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5), // Adjusted opacity
-                    borderRadius: BorderRadius.all(Radius.circular(6)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    child: Row(
-                      children: [
-                        IconButton(onPressed: () {}, icon: Icon(Icons.perm_media, size: 24)),
-                        Spacer(),
-                        IconButton(onPressed: () {}, icon: Icon(Icons.flash_on, size: 24)),
-                        Spacer(),
-                        IconButton(onPressed: () {
-                          setState(() {
-                            camera_facing= !camera_facing;
-                          });
-                        }, icon: Icon(Icons.cameraswitch_rounded, size: 24)),
-                      ],
-                    ),
-                  ),
+        ),
+        child: Column(
+          children: <Widget>[
+            SizedBox(height: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 42),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.all(Radius.circular(6)),
                 ),
-              ),
-              SizedBox(height: 10,),
-              // QRbox
-              Expanded(
-                child: QRView(
-                  cameraFacing: camera_facing ? CameraFacing.back : CameraFacing.front,
-                  key: qrKey,
-                  onQRViewCreated: _onQRViewCreated,
-                  overlay: QrScannerOverlayShape(
-                    borderColor: Color(0xFFFDB623), // Your border color
-                    borderRadius: 10,
-                    borderLength: 30,
-                    borderWidth: 10,
-                    cutOutSize: 300 * _zoomValue, // Apply zoom effect
-                  ),
-
-                )
-
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 42),
-                child: Column(
-                  children: [
-
-                    Container(
-
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric( vertical: 10),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.remove, color: Colors.white),
-                              onPressed: () {
-                                setState(() {
-                                  _zoomValue = (_zoomValue - 0.1).clamp(0.5, 2.0);
-                                });
-                              },
-                            ),
-                            Expanded(
-                              child: Slider(
-                                value: _zoomValue,
-                                min: 0.5,
-                                max: 2.0,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _zoomValue = value;
-                                  });
-                                },
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.add, color: Colors.white),
-                              onPressed: () {
-                                setState(() {
-                                  _zoomValue = (_zoomValue + 0.1).clamp(0.5, 2.0);
-                                });
-                              },
-                            ),
-                          ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => _pickImageFromGallery(),
+                        icon: Icon(Icons.perm_media, size: 24, color: Colors.white),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        onPressed: () => _toggleFlash(),
+                        icon: Icon(
+                          flashOn ? Icons.flash_on : Icons.flash_off,
+                          size: 24,
+                          color: flashOn ? Colors.yellow : Colors.white,
                         ),
                       ),
-                    ),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5), // Adjusted opacity
-                            borderRadius: BorderRadius.all(Radius.circular(6)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            child: Row(
-                              children: [
-                                IconButton(onPressed: () {}, icon: Icon(Icons.perm_media, size: 24)),
-                                Spacer(),
-                                IconButton(onPressed: () {}, icon: Icon(Icons.flash_on, size: 24)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          child: Center(
-                            child: Container(
-                              width: 80, // Slightly larger to include gradient
-                              height: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [Colors.white, Colors.transparent],
-                                  stops: [0.7, 1.0],
-                                ),
-                              ),
-                              child: CircleAvatar(
-                                radius: 35,
-                                backgroundColor: Color(0xFFFDB623),
-                                child: Image.asset(
-                                  'Assets/qr_icon_1.png', // Adjust the icon size
-                                  height: 40,
-                                  width: 40,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-
-
-                  ],
+                      Spacer(),
+                      IconButton(
+                        onPressed: () => _flipCamera(),
+                        icon: Icon(Icons.cameraswitch_rounded, size: 24, color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: 20),
-
-              // Add the circular avatar at the bottom slider
-
-              SizedBox(height: 20),
-            ],
-          ),
-        ],
+            ),
+            SizedBox(height: 10),
+            Expanded(
+              child: QRView(
+                cameraFacing: cameraFacing ? CameraFacing.back : CameraFacing.front,
+                key: qrKey,
+                onQRViewCreated: _onQRViewCreated,
+                overlay: QrScannerOverlayShape(
+                  borderColor: Color(0xFFFDB623),
+                  borderRadius: 10,
+                  borderLength: 30,
+                  borderWidth: 10,
+                  cutOutSize: 300 * _zoomValue,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 42),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.remove, color: Colors.white),
+                          onPressed: () {
+                            setState(() {
+                              _zoomValue = (_zoomValue - 0.1).clamp(0.5, 2.0);
+                            });
+                          },
+                        ),
+                        Expanded(
+                          child: Slider(
+                            value: _zoomValue,
+                            min: 0.5,
+                            max: 2.0,
+                            onChanged: (value) {
+                              setState(() {
+                                _zoomValue = value;
+                              });
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.add, color: Colors.white),
+                          onPressed: () {
+                            setState(() {
+                              _zoomValue = (_zoomValue + 0.1).clamp(0.5, 2.0);
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -191,6 +145,36 @@ class _QRScreenState extends State<QRScreen> {
         );
       }
     });
+  }
+
+  void _toggleFlash() async {
+    if (controller != null) {
+      final isFlashOn = await controller!.getFlashStatus();
+      await controller!.toggleFlash();
+      setState(() {
+        flashOn = !isFlashOn!;
+      });
+    }
+  }
+
+  void _flipCamera() async {
+    if (controller != null) {
+      await controller!.flipCamera();
+      setState(() {
+        cameraFacing = !cameraFacing;
+      });
+    }
+  }
+
+  void _pickImageFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final file = pickedFile.path;
+      // Implement your QR code scanning logic for the image file here
+      // You may need a separate package or method to scan QR codes from images
+    }
   }
 
   bool _isURL(String text) {
