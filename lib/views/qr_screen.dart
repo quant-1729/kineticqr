@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:async';
+
+
+import '../widgets/qr_screen_dialog.dart';
 
 class QRScreen extends StatefulWidget {
   @override
@@ -14,8 +19,76 @@ class _QRScreenState extends State<QRScreen> {
   QRViewController? controller;
   String? qrText;
   double _zoomValue = 1.0;
-  bool cameraFacing = true; // Initial camera facing direction
-  bool flashOn = false;
+  bool cameraFacing = true; // Initial camera facing
+  bool flashOn = false; // Initial flash state
+
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        qrText = scanData.code;
+      });
+
+      // Show the QR scan dialog with the scanned text
+      _showQRScanDialog(qrText!);
+    });
+  }
+
+  void _showQRScanDialog(String qrText) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return QRScanDialog(
+          qrImagePath: 'assets/icons8-qr-100.png', // Replace with the correct path to the QR image if needed
+          qrText: qrText,
+        );
+      },
+    );
+  }
+
+
+  Future<void> _pickImageFromGallery() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      try {
+        // Scan QR from the selected image
+        String? scannedQRCode = await QrCodeToolsPlugin.decodeFrom(image.path);
+        if (scannedQRCode != null) {
+          // Show QR Scan Dialog if QR is detected
+          _showQRScanDialog(scannedQRCode);
+        } else {
+          // Show snackbar if no QR code is detected
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('No QR code found in the image.')),
+          );
+        }
+      } catch (e) {
+        // Handle errors in case QR scan fails
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error scanning QR code: $e')),
+        );
+      }
+    }
+  }
+
+
+  void _toggleFlash() {
+    setState(() {
+      flashOn = !flashOn;
+      controller?.toggleFlash();
+    });
+  }
+
+  void _toggleCamera() {
+    setState(() {
+      cameraFacing = !cameraFacing;
+    });
+    controller?.flipCamera();
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +97,7 @@ class _QRScreenState extends State<QRScreen> {
         decoration: BoxDecoration(
           color: Color(0xFF6d6c6b),
           image: DecorationImage(
-            image: AssetImage('Assets/home_background.jpg'),
+            image: AssetImage('assets/home_background.jpg'),
             fit: BoxFit.fill,
             opacity: 0.2,
           ),
@@ -44,21 +117,21 @@ class _QRScreenState extends State<QRScreen> {
                   child: Row(
                     children: [
                       IconButton(
-                        onPressed: () => _pickImageFromGallery(),
+                        onPressed: _pickImageFromGallery,
                         icon: Icon(Icons.perm_media, size: 24, color: Colors.white),
                       ),
                       Spacer(),
                       IconButton(
-                        onPressed: () => _toggleFlash(),
+                        onPressed: _toggleFlash,
                         icon: Icon(
-                          flashOn ? Icons.flash_on : Icons.flash_off,
+                          flashOn ? Icons.flash_off : Icons.flash_on,
                           size: 24,
-                          color: flashOn ? Colors.yellow : Colors.white,
+                          color: Colors.white,
                         ),
                       ),
                       Spacer(),
                       IconButton(
-                        onPressed: () => _flipCamera(),
+                        onPressed: _toggleCamera,
                         icon: Icon(Icons.cameraswitch_rounded, size: 24, color: Colors.white),
                       ),
                     ],
@@ -85,39 +158,41 @@ class _QRScreenState extends State<QRScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 42),
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.remove, color: Colors.white),
-                          onPressed: () {
-                            setState(() {
-                              _zoomValue = (_zoomValue - 0.1).clamp(0.5, 2.0);
-                            });
-                          },
-                        ),
-                        Expanded(
-                          child: Slider(
-                            value: _zoomValue,
-                            min: 0.5,
-                            max: 2.0,
-                            onChanged: (value) {
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.remove, color: Colors.white),
+                            onPressed: () {
                               setState(() {
-                                _zoomValue = value;
+                                _zoomValue = (_zoomValue - 0.1).clamp(0.5, 2.0);
                               });
                             },
                           ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.add, color: Colors.white),
-                          onPressed: () {
-                            setState(() {
-                              _zoomValue = (_zoomValue + 0.1).clamp(0.5, 2.0);
-                            });
-                          },
-                        ),
-                      ],
+                          Expanded(
+                            child: Slider(
+                              value: _zoomValue,
+                              min: 0.5,
+                              max: 2.0,
+                              onChanged: (value) {
+                                setState(() {
+                                  _zoomValue = value;
+                                });
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add, color: Colors.white),
+                            onPressed: () {
+                              setState(() {
+                                _zoomValue = (_zoomValue + 0.1).clamp(0.5, 2.0);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -128,65 +203,6 @@ class _QRScreenState extends State<QRScreen> {
         ),
       ),
     );
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        qrText = scanData.code;
-      });
-
-      if (_isURL(qrText!)) {
-        _launchURL(qrText!);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Scanned Code: $qrText')),
-        );
-      }
-    });
-  }
-
-  void _toggleFlash() async {
-    if (controller != null) {
-      final isFlashOn = await controller!.getFlashStatus();
-      await controller!.toggleFlash();
-      setState(() {
-        flashOn = !isFlashOn!;
-      });
-    }
-  }
-
-  void _flipCamera() async {
-    if (controller != null) {
-      await controller!.flipCamera();
-      setState(() {
-        cameraFacing = !cameraFacing;
-      });
-    }
-  }
-
-  void _pickImageFromGallery() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      final file = pickedFile.path;
-      // Implement your QR code scanning logic for the image file here
-      // You may need a separate package or method to scan QR codes from images
-    }
-  }
-
-  bool _isURL(String text) {
-    return Uri.tryParse(text)?.hasAbsolutePath ?? false;
-  }
-
-  void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
   @override
