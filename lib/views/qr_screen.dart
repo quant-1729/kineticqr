@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -53,16 +52,12 @@ class _QRScreenState extends State<QRScreen> {
     if (image != null) {
       try {
         // Scan QR from the selected image
-        String? scannedQRCode = await QrCodeToolsPlugin.decodeFrom(image.path);
-        if (scannedQRCode != null) {
-          // Show QR Scan Dialog if QR is detected
-          _showQRScanDialog(scannedQRCode);
-        } else {
+
           // Show snackbar if no QR code is detected
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('No QR code found in the image.')),
           );
-        }
+
       } catch (e) {
         // Handle errors in case QR scan fails
         ScaffoldMessenger.of(context).showSnackBar(

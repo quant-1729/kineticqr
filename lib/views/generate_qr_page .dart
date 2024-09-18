@@ -25,8 +25,44 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
   }
 
   Future<void> _shareQrCode() async {
-    // ... (rest of the _shareQrCode method remains unchanged)
+    try {
+      // Create a picture recorder to capture the QR code image
+      final qrValidationResult = QrValidator.validate(
+        data: _qrData,
+        version: QrVersions.auto,
+        errorCorrectionLevel: QrErrorCorrectLevel.L,
+      );
+
+      if (qrValidationResult.status == QrValidationStatus.valid) {
+        final qrPainter = QrPainter.withQr(
+          qr: qrValidationResult.qrCode!,
+          color: const Color(0xFF000000),
+          emptyColor: const Color(0xFFFFFFFF),
+          gapless: true,
+        );
+
+        // Define the size of the QR code image
+        final picData = await qrPainter.toImageData(200); // You can adjust the size here
+
+        // Save the QR code image to a temporary directory
+        final directory = await getTemporaryDirectory();
+        final path = '${directory.path}/qr_code.png';
+        final file = File(path);
+
+        // Write the image data to the file
+        await file.writeAsBytes(picData!.buffer.asUint8List());
+
+        // Share the file using the share_plus package
+        await Share.shareFiles([path], text: 'Here is my QR code!');
+      }
+    } catch (e) {
+      // Handle any errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error sharing QR code: $e')),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +146,7 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
                   const SizedBox(height: 16),
                   if (_qrData.isNotEmpty)
                     CustomButton(text: "Share QR Code", backgroundColor: Color(0xFFFDB623), textColor: Colors.black, onPressed: (){
-                      _shareQrCode;
+                      _shareQrCode();
                     }),
 
                 ],

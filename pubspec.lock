@@ -408,14 +408,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  qr_code_tools:
-    dependency: "direct main"
-    description:
-      name: qr_code_tools
-      sha256: "79b693f312d99b9917585e409678969e4d2d2d32f9bd43650290cd719486964e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
   qr_flutter:
     dependency: "direct main"
     description:
