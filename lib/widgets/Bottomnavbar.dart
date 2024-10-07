@@ -6,10 +6,10 @@ import 'package:kineticqr/views/qr_screen.dart';
 
 import 'navbar.dart';
 
-
 class BottomAppBarPage extends StatefulWidget {
+  // ignore: non_constant_identifier_names
   final int current_page_index;
-  BottomAppBarPage({this.current_page_index = 0});
+  const BottomAppBarPage({super.key, this.current_page_index = 0});
   @override
   _BottomAppBarPageState createState() => _BottomAppBarPageState();
 }
@@ -35,15 +35,13 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
     print("Navigating to index: $index");
     setState(() {
       _pageIndex = index;
-      _pageController.animateToPage(
+      _pageController.jumpToPage(
         index,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        // duration: Duration(milliseconds: 300),
+        // curve: Curves.easeInOut,
       );
     });
   }
-
-
 
   @override
   void initState() {
@@ -54,10 +52,9 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
 
     _pages = [
       QrGeneraterGrid(), // Index 0
-      QRScreen(),        // Index 1
-      SettingsPage()         // Index 2
+      QRScreen(), // Index 1
+      SettingsPage() // Index 2
     ];
-
   }
 
   @override
