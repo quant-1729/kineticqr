@@ -51,9 +51,9 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
     _pageController = PageController(initialPage: widget.current_page_index);
 
     _pages = [
-      QrGeneraterGrid(), // Index 0
+      const QrGeneraterGrid(), // Index 0
       QRScreen(), // Index 1
-      SettingsPage() // Index 2
+      const SettingsPage() // Index 2
     ];
   }
 

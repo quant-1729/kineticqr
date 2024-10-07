@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kineticqr/utils/Constants/colors.dart';
 
 import 'generate_qr_page .dart';
 
@@ -16,18 +17,29 @@ class _QrGeneraterGridState extends State<QrGeneraterGrid> {
     'Assets/icons8-instagram-48.png',
     'Assets/icons8-website-50.png',
     'Assets/icons8-whatsapp-50.png',
-    'Assets/icons8-wifi-40.png'
+    'Assets/wifi_embd.png'
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.yellow,
+        centerTitle: true,
+        title: const Text(
+          'Generate your own QR',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF6d6c6b),
-          image: const DecorationImage(
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+        decoration: const BoxDecoration(
+          color: Color(0xFF6d6c6b),
+          image: DecorationImage(
             image: AssetImage('Assets/home_background.jpg'),
             fit: BoxFit.fill,
             opacity: 0.2,
@@ -35,26 +47,34 @@ class _QrGeneraterGridState extends State<QrGeneraterGrid> {
         ),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,  // Number of columns in the grid
+            crossAxisCount: 3, // Number of columns in the grid
           ),
-          itemCount: routes.length,  // Specify the number of items in the grid
+          itemCount: routes.length, // Specify the number of items in the grid
           itemBuilder: (context, index) {
             return GestureDetector(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> GenerateQrCodePage(icon: routes[index])));
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GenerateQrCodePage(
+                      icon: routes[index],
+                    ),
+                  ),
+                );
               },
               child: Container(
                 margin: const EdgeInsets.all(8.0), // Optional: add some spacing
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   border: Border.all(
-                    color: Colors.yellow,  // Yellow border
-                    width: 4,  // Border width
+                    color: Colors.yellow, // Yellow border
+                    width: 4, // Border width
                   ),
-                  borderRadius: BorderRadius.circular(6),  // Rounded corners
+                  borderRadius: BorderRadius.circular(6), // Rounded corners
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(6.0), // Padding inside the container
+                  padding:
+                      const EdgeInsets.all(6.0), // Padding inside the container
                   child: Center(
                     child: Image.asset(routes[index]),
                   ),

@@ -9,14 +9,18 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final bool isNewUser = prefs.getBool('newUser') ?? true;
   final bool isDarkMode = prefs.getBool('darkMode') ?? false;
-  runApp(MyApp(isDarkMode: isDarkMode, isNewUser: isNewUser,));
+  runApp(MyApp(
+    isDarkMode: isDarkMode,
+    isNewUser: isNewUser,
+  ));
 }
 
 class MyApp extends StatelessWidget {
   final bool isDarkMode;
   final bool isNewUser;
 
-  const MyApp({Key? key, required this.isDarkMode, required this.isNewUser}) : super(key: key);
+  const MyApp({Key? key, required this.isDarkMode, required this.isNewUser})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +31,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: 'KineticQR',
+          debugShowCheckedModeBanner: false,
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
           themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
