@@ -4,6 +4,7 @@ import 'package:kineticqr/widgets/custom_button.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scan/scan.dart';
+import 'package:vibration/vibration.dart';
 import 'dart:async';
 
 import '../widgets/qr_screen_dialog.dart';
@@ -47,7 +48,12 @@ class _QRScreenState extends State<QRScreen> {
     controller.resumeCamera();
   }
 
-  void _showQRScanDialog(String qrText) {
+  void _showQRScanDialog(String qrText) async {
+    // giving a small amount of vibration.
+    if (await Vibration.hasVibrator() ?? false) {
+      Vibration.vibrate(duration: 300); // Vibrate for 500ms
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -104,140 +110,136 @@ class _QRScreenState extends State<QRScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF6d6c6b),
-        ),
-        child: Column(
-          children: <Widget>[
-            const SizedBox(height: 32),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 42),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
-                  borderRadius: const BorderRadius.all(Radius.circular(6)),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: _pickImageFromGallery,
-                        icon: const Icon(Icons.perm_media,
-                            size: 24, color: Colors.white),
+      backgroundColor: Appcolor.backgroundColor(context),
+      body: Column(
+        children: <Widget>[
+          const SizedBox(height: 32),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 42),
+            child: Card(
+              color: Appcolor.cardColor(context),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: _pickImageFromGallery,
+                      icon: Icon(Icons.perm_media,
+                          size: 24, color: Appcolor.yellowText(context)),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: _toggleFlash,
+                      icon: Icon(
+                        flashOn ? Icons.flashlight_on : Icons.flashlight_off,
+                        size: 24,
+                        color: Appcolor.yellowText(context),
                       ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: _toggleFlash,
-                        icon: Icon(
-                          flashOn ? Icons.flashlight_on : Icons.flashlight_off,
-                          size: 24,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: _toggleCamera,
-                        icon: const Icon(Icons.cameraswitch_rounded,
-                            size: 24, color: Colors.white),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: _toggleCamera,
+                      icon: Icon(Icons.cameraswitch_rounded,
+                          size: 24, color: Appcolor.yellowText(context)),
+                    ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: Stack(children: [
-                Expanded(
-                  child: QRView(
-                    cameraFacing:
-                        cameraFacing ? CameraFacing.back : CameraFacing.front,
-                    key: qrKey,
-                    onQRViewCreated: _onQRViewCreated,
-                    overlay: QrScannerOverlayShape(
-                      borderColor: const Color(0xFFFDB623),
-                      borderRadius: 10,
-                      borderLength: 30,
-                      borderWidth: 10,
-                      cutOutSize: 300 * _zoomValue,
-                    ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: Stack(children: [
+              Expanded(
+                child: QRView(
+                  cameraFacing:
+                      cameraFacing ? CameraFacing.back : CameraFacing.front,
+                  key: qrKey,
+                  onQRViewCreated: _onQRViewCreated,
+                  overlay: QrScannerOverlayShape(
+                    borderColor: const Color(0xFFFDB623),
+                    borderRadius: 10,
+                    borderLength: 30,
+                    borderWidth: 10,
+                    cutOutSize: 300 * _zoomValue,
                   ),
                 ),
-                if (!isCameraOn)
-                  Expanded(
-                    child: SizedBox.expand(
-                      child: Container(
-                        color: Colors.black54,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 50),
-                            child: CustomButton(
-                              text: 'Scan another QR',
-                              backgroundColor: Appcolor.yellowText(context),
-                              textColor: Colors.black,
-                              height: 52,
-                              onPressed: () {
-                                setState(() {
-                                  isCameraOn = true;
-                                  controller!.resumeCamera();
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-              ]),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 42),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove, color: Colors.white),
-                          onPressed: () {
-                            setState(() {
-                              _zoomValue = (_zoomValue - 0.1).clamp(0.5, 2.0);
-                            });
-                          },
-                        ),
-                        Expanded(
-                          child: Slider(
-                            value: _zoomValue,
-                            min: 0.5,
-                            max: 2.0,
-                            onChanged: (value) {
+              ),
+              if (!isCameraOn)
+                Expanded(
+                  child: SizedBox.expand(
+                    child: Container(
+                      color: Colors.black54,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 50),
+                          child: CustomButton(
+                            text: 'Scan another QR',
+                            backgroundColor: Appcolor.yellowText(context),
+                            textColor: Colors.black,
+                            height: 52,
+                            onPressed: () {
                               setState(() {
-                                _zoomValue = value;
+                                isCameraOn = true;
+                                controller!.resumeCamera();
                               });
                             },
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.add, color: Colors.white),
-                          onPressed: () {
+                      ),
+                    ),
+                  ),
+                )
+            ]),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 42),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.remove,
+                            color: Appcolor.yellowText(context)),
+                        onPressed: () {
+                          setState(() {
+                            _zoomValue = (_zoomValue - 0.1).clamp(0.5, 2.0);
+                          });
+                        },
+                      ),
+                      Expanded(
+                        child: Slider(
+                          activeColor: Appcolor.yellowText(context),
+                          value: _zoomValue,
+                          min: 0.5,
+                          max: 2.0,
+                          onChanged: (value) {
                             setState(() {
-                              _zoomValue = (_zoomValue + 0.1).clamp(0.5, 2.0);
+                              _zoomValue = value;
                             });
                           },
                         ),
-                      ],
-                    ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.add,
+                            color: Appcolor.yellowText(context)),
+                        onPressed: () {
+                          setState(() {
+                            _zoomValue = (_zoomValue + 0.1).clamp(0.5, 2.0);
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }

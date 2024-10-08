@@ -41,6 +41,7 @@ class _QrGeneraterGridState extends State<QrGeneraterGrid> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        foregroundColor: Colors.black,
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
