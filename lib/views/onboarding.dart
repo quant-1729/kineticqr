@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kineticqr/utils/Constants/colors.dart';
-import 'package:kineticqr/views/qr_screen.dart';
 import 'package:kineticqr/widgets/custom_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,8 +49,8 @@ class _OnboardingState extends State<Onboarding> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 56.w),
               child: isLoading
-                  ? const CircularProgressIndicator(
-                      color: Appcolor.yellow,
+                  ? CircularProgressIndicator(
+                      color: Appcolor.yellowText(context),
                     )
                   : CustomButton(
                       text: "Let's Start",
@@ -67,7 +66,7 @@ class _OnboardingState extends State<Onboarding> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => BottomAppBarPage(),
+                                builder: (context) => const BottomAppBarPage(),
                               ),
                             );
                           },

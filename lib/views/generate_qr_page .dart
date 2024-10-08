@@ -118,7 +118,7 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Appcolor.bg,
+      backgroundColor: Appcolor.backgroundColor(context),
       appBar: AppBar(
         title: const Text('Generate QR Code'),
         leading: IconButton(
@@ -128,7 +128,7 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
           },
         ),
         backgroundColor: Appcolor.yellow,
-        elevation: 0,
+        foregroundColor: Colors.black,
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(
@@ -142,11 +142,13 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF424242),
+                  color: Appcolor.cardColor(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: const Border(
-                    top: BorderSide(color: Appcolor.yellow, width: 3),
-                    bottom: BorderSide(color: Appcolor.yellow, width: 3),
+                  border: Border(
+                    top: BorderSide(
+                        color: Appcolor.yellowText(context), width: 3),
+                    bottom: BorderSide(
+                        color: Appcolor.yellowText(context), width: 3),
                   ),
                 ),
                 child: Column(
@@ -187,7 +189,8 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Appcolor.yellow),
+                          borderSide:
+                              BorderSide(color: Appcolor.yellowText(context)),
                         ),
                       ),
                       style: const TextStyle(color: Colors.black),
@@ -198,7 +201,7 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
                     // Button to generate QR code
                     CustomButton(
                       text: "Generate QR Code",
-                      backgroundColor: Appcolor.yellow,
+                      backgroundColor: Appcolor.yellowText(context),
                       textColor: Colors.black,
                       onPressed: () {
                         _updateQrCode(_inputText.text);
@@ -208,7 +211,7 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
                     if (_qrData.isNotEmpty)
                       CustomButton(
                         text: "Share QR Code",
-                        backgroundColor: Appcolor.yellow,
+                        backgroundColor: Appcolor.yellowText(context),
                         textColor: Colors.black,
                         onPressed: () {
                           _shareQrCode();
@@ -226,13 +229,13 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
 
   Widget AdvancedSettingsMenu() {
     return ExpansionTile(
-      title: const Text(
+      title: Text(
         'Advanced settings',
-        style: AppStyles.yellowText,
+        style: AppStyles.yellowText(context),
       ),
       trailing: Icon(
         advancedSettingVisible ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-        color: Appcolor.yellow,
+        color: Appcolor.yellowText(context),
       ),
       onExpansionChanged: (value) {
         setState(() {
@@ -246,9 +249,9 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.max,
             children: [
-              const Text(
+              Text(
                 'Error Correction Level',
-                style: AppStyles.yellowText,
+                style: AppStyles.yellowText(context),
               ),
               PopupMenuButton<int>(
                 itemBuilder: (_) {
@@ -263,11 +266,11 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
                   height: 25,
                   width: 60,
                   decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: Appcolor.yellow,
                     borderRadius: BorderRadius.circular(7),
                     border: const Border(
                       bottom: BorderSide(
-                        color: Appcolor.yellow,
+                        color: Colors.black,
                         width: 3,
                       ),
                     ),
@@ -275,7 +278,7 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
                   child: Center(
                     child: Text(
                       errorCorrectionLevels[qrErrorCorrectLevel],
-                      style: AppStyles.yellowText,
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                 ),
@@ -297,13 +300,13 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.max,
             children: [
-              const Text(
+              Text(
                 'Add icon in center',
-                style: AppStyles.yellowText,
+                style: AppStyles.yellowText(context),
               ),
               Switch(
                 value: isEmbeddedImage,
-                activeColor: Appcolor.yellow,
+                activeColor: Appcolor.yellowText(context),
                 onChanged: (value) {
                   setState(() {
                     isEmbeddedImage = value;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kineticqr/views/Settings.dart';
 import 'package:kineticqr/views/qr_generater_grid.dart';
 import 'package:kineticqr/views/qr_screen.dart';
@@ -25,7 +24,7 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
       _pageIndex = 2;
       _pageController.animateToPage(
         2,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     });
@@ -52,7 +51,7 @@ class _BottomAppBarPageState extends State<BottomAppBarPage> {
 
     _pages = [
       const QrGeneraterGrid(), // Index 0
-      QRScreen(), // Index 1
+      const QRScreen(), // Index 1
       const SettingsPage() // Index 2
     ];
   }
