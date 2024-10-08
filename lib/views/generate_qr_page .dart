@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:kineticqr/utils/Constants/colors.dart';
 import 'package:kineticqr/utils/Constants/styles.dart';
 import 'package:kineticqr/widgets/custom_button.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -40,63 +42,59 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
     return frameInfo.image;
   }
 
-  // previously the qr code was fit to the image, with no white margin.
-  Future<void> _shareQrCode() async {
+  Future<String?> _createQrImageAsPng() async {
     try {
-      // Create a picture recorder to capture the QR code image
       final qrValidationResult = QrValidator.validate(
         data: _qrData,
         version: QrVersions.auto,
-        errorCorrectionLevel: qrErrorCorrectLevel,
+        errorCorrectionLevel: QrErrorCorrectLevel.L,
       );
 
       if (qrValidationResult.status == QrValidationStatus.valid) {
         ui.Image? embeddedImage;
 
-        // Check if embedded image is required
         if (isEmbeddedImage) {
-          embeddedImage =
-              await loadUiImage(widget.icon); // Load the image from assets
+          embeddedImage = await loadUiImage(widget.icon);
         }
 
+        // Create the QR painter with the image
         final qrPainter = QrPainter.withQr(
           qr: qrValidationResult.qrCode!,
           gapless: true,
-          embeddedImage: embeddedImage, // Pass the loaded ui.Image here
+          embeddedImage: embeddedImage,
         );
 
-        // Define the size of the QR code image with extra space for margin
-        const int imageSize = 200; // QR code size
-        const int marginSize = 12; // white Margin
-        const int totalSize = imageSize +
-            marginSize * 2; // Total size including margin of both sides
+        // Define the size of the QR code image with margin
+        const int imageSize = 200;
+        const int marginSize = 12;
+        const int totalSize = imageSize + marginSize * 2;
 
-        // Create an image with the QR code and the margin
+        // Create a picture recorder and a canvas to draw on
         final pictureRecorder = ui.PictureRecorder();
         final canvas = Canvas(pictureRecorder,
             Rect.fromLTWH(0, 0, totalSize.toDouble(), totalSize.toDouble()));
 
-        // Paint the background (white) to cover the entire canvas including margin
+        // Paint the background with white margin
         final paint = Paint()..color = Colors.white;
         canvas.drawRect(
             Rect.fromLTWH(0, 0, totalSize.toDouble(), totalSize.toDouble()),
             paint);
 
-        // Center the QR code by translating the canvas
+        // Center the QR code
         final offset = Offset(marginSize.toDouble(), marginSize.toDouble());
         canvas.translate(offset.dx, offset.dy);
 
-        // Paint the QR code onto the canvas (centered with margin)
+        // Paint the QR code
         qrPainter.paint(
             canvas, Size(imageSize.toDouble(), imageSize.toDouble()));
 
-        // Convert the canvas to an image
+        // Convert canvas to image
         final img =
             await pictureRecorder.endRecording().toImage(totalSize, totalSize);
         final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
         final picData = byteData!.buffer.asUint8List();
 
-        // Save the QR code image to a temporary directory
+        // Save the image to a temporary directory
         final directory = await getTemporaryDirectory();
         final path = '${directory.path}/qr_code.png';
         final file = File(path);
@@ -104,13 +102,46 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
         // Write the image data to the file
         await file.writeAsBytes(picData);
 
-        // Share the file using the share_plus package
-        await Share.shareFiles([path], text: 'Here is my QR code!');
+        // Return the file path
+        return path;
       }
     } catch (e) {
-      // Handle any errors
+      print('Error creating QR image: $e');
+    }
+    return null;
+  }
+
+  Future<void> _shareQrCode() async {
+    try {
+      final filePath = await _createQrImageAsPng();
+
+      if (filePath != null) {
+        await Share.shareFiles([filePath], text: 'Here is my QR code!');
+      } else {
+        throw 'QR code image creation failed.';
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error sharing QR code: $e')),
+      );
+    }
+  }
+
+  Future<void> _saveQrCodeToGallery() async {
+    try {
+      final filePath = await _createQrImageAsPng();
+
+      if (filePath != null) {
+        await GallerySaver.saveImage(filePath, albumName: 'Kinetic QR');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('QR code saved to gallery')),
+        );
+      } else {
+        throw 'QR code image creation failed.';
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving QR code: $e')),
       );
     }
   }
@@ -208,6 +239,18 @@ class _GenerateQrCodePageState extends State<GenerateQrCodePage> {
                       },
                     ),
                     const SizedBox(height: 16),
+                    if (_qrData.isNotEmpty)
+                      CustomButton(
+                        text: "Save QR Code to Gallery",
+                        backgroundColor: Appcolor.yellowText(context),
+                        textColor: Colors.black,
+                        onPressed: () {
+                          _saveQrCodeToGallery();
+                        },
+                      ),
+                    const SizedBox(
+                      height: 16,
+                    ),
                     if (_qrData.isNotEmpty)
                       CustomButton(
                         text: "Share QR Code",

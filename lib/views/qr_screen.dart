@@ -32,7 +32,6 @@ class _QRScreenState extends State<QRScreen> {
         controller.pauseCamera(); // Pause the camera to avoid scanning again
 
         setState(() {
-          print('debug rebuilt');
           qrText = scanData.code;
           isCameraOn = false;
         });
@@ -52,8 +51,7 @@ class _QRScreenState extends State<QRScreen> {
       context: context,
       builder: (BuildContext context) {
         return QRScanDialog(
-          qrImagePath:
-              'Assets/icons8-qr-100.png', // Replace with the correct path to the QR image if needed
+          qrImagePath: 'Assets/icons8-qr-100.png',
           qrText: qrText,
           controller: controller!,
         );
@@ -66,12 +64,7 @@ class _QRScreenState extends State<QRScreen> {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       try {
-        // Scan QR from the selected image
-
-        // Show snackbar if no QR code is detected
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No QR code found in the image.')),
-        );
+        // Use qr_code_tools to extract QR code from the image
       } catch (e) {
         // Handle errors in case QR scan fails
         ScaffoldMessenger.of(context).showSnackBar(
