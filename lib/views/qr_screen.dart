@@ -3,6 +3,7 @@ import 'package:kineticqr/utils/Constants/colors.dart';
 import 'package:kineticqr/widgets/custom_button.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:scan/scan.dart';
 import 'dart:async';
 
 import '../widgets/qr_screen_dialog.dart';
@@ -60,13 +61,25 @@ class _QRScreenState extends State<QRScreen> {
   }
 
   Future<void> _pickImageFromGallery() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    controller!.stopCamera();
+    setState(() {
+      isCameraOn = false;
+    });
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
     if (image != null) {
       try {
-        // Use qr_code_tools to extract QR code from the image
+        final result = await Scan.parse(image.path);
+
+        if (result != null && result.isNotEmpty) {
+          _showQRScanDialog(result);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No QR code found in the image.')),
+          );
+        }
       } catch (e) {
-        // Handle errors in case QR scan fails
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error scanning QR code: $e')),
         );
@@ -119,7 +132,7 @@ class _QRScreenState extends State<QRScreen> {
                       IconButton(
                         onPressed: _toggleFlash,
                         icon: Icon(
-                          flashOn ? Icons.flash_off : Icons.flash_on,
+                          flashOn ? Icons.flashlight_on : Icons.flashlight_off,
                           size: 24,
                           color: Colors.white,
                         ),
@@ -154,18 +167,28 @@ class _QRScreenState extends State<QRScreen> {
                   ),
                 ),
                 if (!isCameraOn)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                    child: CustomButton(
-                      text: 'Scan another QR',
-                      backgroundColor: Appcolor.yellowText(context),
-                      textColor: Colors.black,
-                      onPressed: () {
-                        setState(() {
-                          isCameraOn = true;
-                          controller!.resumeCamera();
-                        });
-                      },
+                  Expanded(
+                    child: SizedBox.expand(
+                      child: Container(
+                        color: Colors.black54,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 50),
+                            child: CustomButton(
+                              text: 'Scan another QR',
+                              backgroundColor: Appcolor.yellowText(context),
+                              textColor: Colors.black,
+                              height: 52,
+                              onPressed: () {
+                                setState(() {
+                                  isCameraOn = true;
+                                  controller!.resumeCamera();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   )
               ]),

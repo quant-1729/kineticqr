@@ -50,7 +50,10 @@ class _QrGeneraterGridState extends State<QrGeneraterGrid> {
         child: Column(
           children: [
             ...[0, 1, 2, 3, 4, 5, 6].map((i) {
-              return QrTypeTile(text: names[i], imagePath: routes[i]);
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: QrTypeTile(text: names[i], imagePath: routes[i]),
+              );
             }),
           ],
         ),

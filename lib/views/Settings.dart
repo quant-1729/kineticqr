@@ -13,7 +13,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool isVibrateOn = true;
-  bool isDarkModePreferred = false;
+  bool isScannerDefault = false;
 
   @override
   void initState() {
@@ -25,14 +25,17 @@ class _SettingsPageState extends State<SettingsPage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       isVibrateOn = prefs.getBool('vibrate') ?? true;
-      isDarkModePreferred = prefs.getBool('darkMode') ?? false;
+      isScannerDefault = prefs.getBool('scannerDefault') ?? false;
     });
   }
 
   _savePreferences() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('vibrate', isVibrateOn);
-    await prefs.setBool('darkMode', isDarkModePreferred);
+    await prefs.setBool('scannerDefault', isScannerDefault);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Preferences saved.')),
+    );
   }
 
   @override
@@ -66,8 +69,8 @@ class _SettingsPageState extends State<SettingsPage> {
               onChanged: (value) {
                 setState(() {
                   isVibrateOn = value;
-                  _savePreferences();
                 });
+                _savePreferences();
               },
             ),
             const SizedBox(height: 12),
@@ -81,6 +84,22 @@ class _SettingsPageState extends State<SettingsPage> {
               onChanged: (value) {
                 Provider.of<ThemeProvider>(context, listen: false)
                     .toggleTheme(value);
+              },
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            buildSettingCard(
+              context,
+              icon: Icons.home,
+              title: "Scanner as deault page",
+              subtitle: "Set QR Scanner as default page.",
+              value: isScannerDefault,
+              onChanged: (value) {
+                setState(() {
+                  isScannerDefault = value;
+                });
+                _savePreferences();
               },
             ),
             const SizedBox(height: 32),

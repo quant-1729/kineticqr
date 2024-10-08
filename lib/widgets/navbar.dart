@@ -24,7 +24,7 @@ class BottomNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           navItem(
-            Icons.perm_media,
+            Icons.edit_square,
             pageIndex == 0,
             onTap: () => onTap(0),
           ),
@@ -44,10 +44,9 @@ class BottomNavBar extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 35.r,
                   backgroundColor: const Color(0xFFFDB623),
-                  child: Image.asset(
-                    'Assets/qr_icon_1.png',
-                    height: 40.h,
-                    width: 40.w,
+                  child: const Icon(
+                    Icons.qr_code_scanner,
+                    size: 45,
                   ),
                 ),
               ),

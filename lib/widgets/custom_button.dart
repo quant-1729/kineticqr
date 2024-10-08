@@ -32,7 +32,7 @@ class CustomButton extends StatelessWidget {
           ),
         ),
         padding: EdgeInsets.all(10.h),
-        height: this.height.h,
+        height: height.h,
         child: Center(
           child: Text(
             text,
