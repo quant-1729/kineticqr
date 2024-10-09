@@ -21,14 +21,16 @@ Easily generate QR codes for different use cases, including:
 - **Error Correction Level**: Control the error correction level (L, M, Q, H) to make your QR codes more robust.
 - **Embedded Image**: Customize your QR code with an embedded image, such as a logo or icon.
 
-![](screenshots/home_light.jpg)![](screenshots/home_dark.jpg)
-![QR Code Generation](screenshots/qr_gen.jpg)![Generated QR Code](screenshots/qr_generate_light.jpg)![Generated QR Code (Dark Theme)](screenshots/qr_generate_dark.jpg)![Advanced options](screenshots/qr_generate_adv_dark.jpg)
+<img src="screenshots/home_light.jpg" alt="Home Light Mode" width="240"/>&nbsp;&nbsp;<img src="screenshots/home_dark.jpg" alt="Home Dark Mode" width="240"/>
+
+<img src="screenshots/qr_gen.jpg" alt="QR Code Generation" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_generate_light.jpg" alt="Generated QR Code (Light Theme)" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_generate_dark.jpg" alt="Generated QR Code (Dark Theme)" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_generate_adv_dark.jpg" alt="Advanced options" width="240"/>
+
 
 ### 📤 QR Code Sharing
 - Save generated QR codes as **PNG images** in your gallery.
 - Directly share the generated QR codes across different platforms (social media, email, etc.).
 
-![Sharing generated QR](screenshots/qr_share.jpg)
+<img src="screenshots/qr_share.jpg" alt="Sharing Generated QR" width="240"/>
 
 ### 📷 QR Code Scanning
 Kinetic QR features an advanced and intuitive QR code scanner:
@@ -36,20 +38,20 @@ Kinetic QR features an advanced and intuitive QR code scanner:
 - **Zoom Functionality**: Zoom in or out while scanning to capture QR codes from different distances.
 - **Scan from Gallery**: Select images from your gallery to scan QR codes embedded in the image.
 
-![Scanning QR Code](screenshots/qr_scan_light.jpg)![Dark Mode](screenshots/qr_scan_dark.jpg)
+<img src="screenshots/qr_scan_light.jpg" alt="QR Scanner Light Mode" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_scan_dark.jpg" alt="QR Scanner Dark Mode" width="240"/>
 
 ### Scan Results Handling
 - **Copy to Clipboard**: Instantly copy the scanned result to your clipboard for later use.
 - **Open URLs in Browser**: If the scanned QR code contains a URL, the app provides a direct option to open it in your default browser.
 
-![QR Scan Result](screenshots/scan_result.jpg)
+<img src="screenshots/scan_result.jpg" alt="QR Scan Result" width="240"/>
 
 ### 🎨 Themes & Customization
 - Dual theme support: **Light Mode** and **Dark Mode** to provide an optimal user experience.
 - **Customize Default Page**: Set the QR scanner as the default page when the app opens.
 - **Vibration on Success**: Enable or disable the vibration feedback on a successful QR scan.
 
-![Settings Page (Light)](screenshots/setting_light.jpg)![Settings Page (Dark)](screenshots/setting_dark.jpg)
+<img src="screenshots/setting_light.jpg" alt="Settings Page Light" width="240"/>&nbsp;&nbsp;<img src="screenshots/setting_dark.jpg" alt="Settings Page Dark" width="240"/>
 
 ### 🗂️ Settings & Storage
 - Store user preferences, like theme, default page, and vibration settings, using **Shared Preferences** to retain settings between app sessions.
