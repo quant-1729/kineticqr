@@ -23,7 +23,7 @@ Easily generate QR codes for different use cases, including:
 
 <img src="screenshots/home_light.jpg" alt="Home Light Mode" width="240"/>&nbsp;&nbsp;<img src="screenshots/home_dark.jpg" alt="Home Dark Mode" width="240"/>
 
-<img src="screenshots/qr_gen.jpg" alt="QR Code Generation" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_generate_light.jpg" alt="Generated QR Code (Light Theme)" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_generate_dark.jpg" alt="Generated QR Code (Dark Theme)" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_generate_adv_dark.jpg" alt="Advanced options" width="240"/>
+<img src="screenshots/qr_gen_dark.jpg" alt="QR Code Generation" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_generate_dark.jpg" alt="Generated QR Code (Dark Theme)" width="240"/>&nbsp;&nbsp;<img src="screenshots/qr_generate_adv_light.jpg" alt="Advanced options" width="240"/>
 
 
 ### 📤 QR Code Sharing
@@ -85,7 +85,7 @@ Before you begin, ensure you have the following:
 ### 🔧 Installation
 - Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/kinetic-qr.git
+   git clone https://github.com/quant-1729/kineticqr.git
 - Navigate to the project directory:
    ```bash
    cd kinetic-qr
