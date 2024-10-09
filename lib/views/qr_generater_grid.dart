@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'generate_qr_page .dart';
+import 'package:kineticqr/utils/Constants/colors.dart';
+import 'package:kineticqr/widgets/qr_types_tile.dart';
 
 class QrGeneraterGrid extends StatefulWidget {
   const QrGeneraterGrid({super.key});
@@ -11,57 +11,52 @@ class QrGeneraterGrid extends StatefulWidget {
 
 class _QrGeneraterGridState extends State<QrGeneraterGrid> {
   List<String> routes = [
-    'Assets/icons8-contact-50.png',
-    'Assets/icons8-gmail-50.png',
-    'Assets/icons8-instagram-48.png',
-    'Assets/icons8-website-50.png',
-    'Assets/icons8-whatsapp-50.png',
-    'Assets/icons8-wifi-40.png'
+    'Assets/contact.png',
+    'Assets/gmail.png',
+    'Assets/instagram.png',
+    'Assets/website.png',
+    'Assets/whatsapp.png',
+    'Assets/wifi.png',
+    'Assets/text.png'
+  ];
+  List<String> names = [
+    'Contact',
+    'Gmail',
+    'Instagram',
+    'Website',
+    'WhatsApp',
+    'Wi-fi',
+    'Text Data'
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF6d6c6b),
-          image: const DecorationImage(
-            image: AssetImage('Assets/home_background.jpg'),
-            fit: BoxFit.fill,
-            opacity: 0.2,
+      appBar: AppBar(
+        backgroundColor: Appcolor.yellow,
+        centerTitle: true,
+        title: const Text(
+          'Generate your own QR',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
           ),
         ),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,  // Number of columns in the grid
-          ),
-          itemCount: routes.length,  // Specify the number of items in the grid
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> GenerateQrCodePage(icon: routes[index])));
-              },
-              child: Container(
-                margin: const EdgeInsets.all(8.0), // Optional: add some spacing
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.all(
-                    color: Colors.yellow,  // Yellow border
-                    width: 4,  // Border width
-                  ),
-                  borderRadius: BorderRadius.circular(6),  // Rounded corners
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(6.0), // Padding inside the container
-                  child: Center(
-                    child: Image.asset(routes[index]),
-                  ),
-                ),
-              ),
-            );
-          },
+        foregroundColor: Colors.black,
+      ),
+      body: Container(
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Appcolor.backgroundColor(context),
+        ),
+        child: Column(
+          children: [
+            ...[0, 1, 2, 3, 4, 5, 6].map((i) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: QrTypeTile(text: names[i], imagePath: routes[i]),
+              );
+            }),
+          ],
         ),
       ),
     );
